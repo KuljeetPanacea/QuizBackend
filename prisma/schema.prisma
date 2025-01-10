@@ -47,7 +47,7 @@ model Answer {
   id          String      @id @default(uuid())
   questionId  String
   question    Question    @relation(fields: [questionId], references: [id])
-  option      String      // Yes, Unsure, No
+
   score       Int         // Score based on the answer: Yes = 5, Unsure = 3, No = 1
 
   createdAt   DateTime    @default(now())
