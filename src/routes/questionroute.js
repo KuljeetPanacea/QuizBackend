@@ -13,11 +13,11 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-router.get("/questions/total", async (req, res) => {
+router.get('/questions/total', async (req, res) => {
   try {
     // Count the total number of questions in the database
     const totalQuestions = await prisma.question.count();
-
+ 
     // Send the total count in the response
     res.json({ totalQuestions });
   } catch (error) {
