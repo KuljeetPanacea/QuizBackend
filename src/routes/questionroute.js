@@ -84,7 +84,7 @@ router.post("/save-answers", async (req, res) => {
     // Save all answers in bulk
     const savedAnswers = await prisma.answer.createMany({
       data: answerData,
-      skipDuplicates: true, // Avoid duplicate entries
+      skipDuplicates: true, 
     });
 
     res
