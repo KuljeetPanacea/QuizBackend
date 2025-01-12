@@ -31,7 +31,43 @@ router.get('/:categoryId', async (req, res) => {
   }
 });
 
-
+router.get('/categories/scores', async (req, res) => {
+  try {
+    // Fetch all categories with their questions and answers
+    const categories = await prisma.category.findMany({
+      include: {
+        questions: {
+          include: {
+            answers: true, // Include the answers for each question
+          },
+        },
+      },
+    });
+ 
+    // Calculate the total score for each category
+    const categoryScores = categories.map(category => {
+      const totalScore = category.questions.reduce((acc, question) => {
+        // Sum the scores of all answers in the question
+        const questionScore = question.answers.reduce((sum, answer) => {
+          return sum + answer.score; // Add the score from each answer
+        }, 0);
+        return acc + questionScore; // Add to the total score for the category
+      }, 0);
+ 
+      return {
+        categoryId: category.id,
+        categoryName: category.name,
+        score: totalScore,
+      };
+    });
+ 
+    // Send the response with the scores
+    res.json(categoryScores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch category scores' });
+  }
+});
 
 router.get('/scores', async (req, res) => {
   try {

@@ -13,12 +13,11 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 router.get('/questions/total', async (req, res) => {
   try {
-    // Count the total number of questions in the database
     const totalQuestions = await prisma.question.count();
  
-    // Send the total count in the response
     res.json({ totalQuestions });
   } catch (error) {
     console.error("Error fetching total questions:", error);
@@ -35,7 +34,6 @@ router.get("/:categoryId", async (req, res) => {
     const questions = await prisma.question.findMany({
       where: { categoryId },
       select: { text: true, id: true },
-      // Select only the `text` field
     });
 
     if (questions.length === 0) {
@@ -95,16 +93,25 @@ router.post("/save-answers", async (req, res) => {
   }
 });
 
-// Delete a user
-router.delete("/:id", async (req, res) => {
+
+router.delete('/delete', async (req, res) => {
+  console.log("delete called")
   try {
-    await prisma.user.delete({
-      where: { id: parseInt(req.params.id) },
-    });
-    res.status(204).end();
+    // Delete all answers using Prisma's deleteMany method
+    const deletedAnswers = await prisma.answer.deleteMany();
+    // Check if any answers were deleted
+    if (deletedAnswers.count > 0) {
+      res.json({
+        message: `${deletedAnswers.count} answers were deleted successfully.`,
+      });
+    } else {
+      res.status(404).json({ message: 'No answers found to delete.' });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete answers' });
   }
 });
+
 
 module.exports = router;
